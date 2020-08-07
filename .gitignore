@@ -1,6 +1,7 @@
 .DS_Store
 .idea/
 ivenv/
+node_modules
 led / optimized / DLL files
 __pycache__/
 *.py[cod]
