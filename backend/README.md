@@ -98,3 +98,19 @@ createdb trivia_test
 psql trivia_test < trivia.psql
 python test_flaskr.py
 ```
+
+## Use Database in docker
+
+### Setup postgres in docker container and empty trivia Database
+
+For a user company_data create a DB called trivia.
+For that, enter container and execute CREATE DATABASE trivia.
+
+### Populate trivia DB
+
+From backend folder execute:
+
+```
+cat trivia.psql | docker exec -i company_data psql -U company_data -d trivia
+cat trivia_content.psql | docker exec -i company_data psql -U company_data -d trivia
+```
