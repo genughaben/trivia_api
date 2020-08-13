@@ -181,14 +181,7 @@ def create_app(test_config=None):
 
     @app.route('/question', methods=['POST'])
     def create_questions():
-
-        try:
-            if request.is_json:
-                data = request.get_json()
-            else:
-                raise ValueError("Error: incorrect MIME-Type")
-        except Exception as e:
-            abort(400, description="Error: payload is not json")
+        data: json = extract_incoming_json()
 
         try:
             assert valid_string(data, "question"), INVALID_STRING_VALUE_MESSAGE % 'question'
@@ -330,14 +323,7 @@ def create_app(test_config=None):
 
     @app.route('/play', methods=['POST'])
     def play_trivia():
-
-        try:
-            if request.is_json:
-                data = request.get_json()
-            else:
-                raise ValueError("Error: incorrect MIME-Type")
-        except Exception as e:
-            abort(400, description=f"Error {e}: payload is not json")
+        data: json = extract_incoming_json()
 
         try:
             if 'question_ids' in data:
