@@ -46,17 +46,20 @@ def create_app(test_config=None):
         error = False
         try:
             categories = Category.query.all()
-            category_types = []
+            category_types = {}
             if categories is not None:
                 for category in categories:
-                    category_types.append(category.type)
+                    category_types[category.id] = category.type
         except:
             error = True
             print(sys.exc_info())
 
         if error:
             abort(404)
-        return jsonify(category_types)
+        print(f"category_types: {category_types}")
+        return jsonify({
+            'categories': category_types
+        })
 
     '''
     @TODO: 
@@ -179,7 +182,7 @@ def create_app(test_config=None):
     of the questions list in the "List" tab.  
     '''
 
-    @app.route('/question', methods=['POST'])
+    @app.route('/questions', methods=['POST'])
     def create_questions():
         data: json = extract_incoming_json()
 
