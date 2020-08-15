@@ -1,4 +1,5 @@
 import unittest
+import json
 
 from flask_sqlalchemy import SQLAlchemy
 
@@ -12,7 +13,7 @@ class TriviaTestCase(unittest.TestCase):
     def setUp(self):
         """Define test variables and initialize app."""
         self.app = create_app()
-        self.client = self.app.test_client
+        self.client = self.app.test_client()
         self.database_name = "trivia_test"
         self.database_path = "postgres://company_data:rightpassword@{}/{}".format('localhost:5432', self.database_name)
         setup_db(self.app, self.database_path)
@@ -32,6 +33,25 @@ class TriviaTestCase(unittest.TestCase):
     TODO
     Write at least one test for each endpoint for successful operation and for expected errors.
     """
+
+    def test_categories(self):
+        """
+        Inspection
+        ----------
+        > python -m unittest test_flaskr.TriviaTestCase.test_categories
+        """
+
+        # EXPECTED RESULT:
+
+        response = self.client.get('categories')
+        result: json = response.get_json()
+
+        self.assertTrue('categories' in result)
+        self.assertEqual(len(result['categories']), 6)
+        self.assertTrue('success' in result)
+        self.assertTrue(result['success'])
+        self.assertEqual(response.status_code, 200)
+
 
 
 # Make the tests conveniently executable

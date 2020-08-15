@@ -42,7 +42,6 @@ def create_app(test_config=None):
 
     @app.route('/categories')
     def get_categories():
-        error = False
         try:
             categories = Category.query.all()
             category_types = {}
@@ -50,13 +49,11 @@ def create_app(test_config=None):
                 for category in categories:
                     category_types[category.id] = category.type
         except:
-            error = True
-            print(sys.exc_info())
-
-        if error:
+            logger.error(f'{request.path}: 404 with {sys.exc_info()} and trace: {traceback.format_exc()}')
             abort(404)
-        print(f"category_types: {category_types}")
+
         return jsonify({
+            'success': True,
             'categories': category_types
         })
 
