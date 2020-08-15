@@ -6,7 +6,7 @@ from flask_cors import CORS
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.sql.expression import func
 
-from flaskr.logger import logger
+import flaskr.logger
 from flaskr.validation import *
 from models import setup_db, Question, Category
 
@@ -92,6 +92,7 @@ def create_app(test_config=None):
     def get_questions():
         try:
             return jsonify({
+                'success': True,
                 'questions': paginate_questions(request),
                 'total_questions': Question.count(),
                 'categories': {category.id: category.type for category in Category.query.all()}

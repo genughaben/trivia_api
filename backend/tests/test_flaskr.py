@@ -41,9 +41,7 @@ class TriviaTestCase(unittest.TestCase):
         > python -m unittest test_flaskr.TriviaTestCase.test_categories
         """
 
-        # EXPECTED RESULT:
-
-        response = self.client.get('categories')
+        response = self.client.get('/categories')
         result: json = response.get_json()
 
         self.assertTrue('categories' in result)
@@ -51,6 +49,26 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue('success' in result)
         self.assertTrue(result['success'])
         self.assertEqual(response.status_code, 200)
+
+    def test_list_questions(self):
+        """
+        Inspection
+        ----------
+        > python -m unittest test_flaskr.TriviaTestCase.test_list_questions
+        """
+
+        response = self.client.get('/questions')
+        result: json = response.get_json()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('success' in result)
+        self.assertTrue(result['success'])
+        self.assertTrue('questions' in result)
+        self.assertEqual(len(result['questions']), 10)
+        self.assertTrue('total_questions' in result)
+        self.assertEqual(result['total_questions'], 19)
+        self.assertTrue('categories' in result)
+        self.assertEqual(len(result['categories']), 6)
 
 
 
