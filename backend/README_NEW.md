@@ -1,16 +1,10 @@
 # Trivia API instructions:
 
-## Debugging / Logging
+## Getting started:
 
-For debugging, a log file can be visited to see full error messages and stack trace.
-trivia.log.
-
-You can also add more log statements by importing the logger from flaskr/logger.py add write to it using:
-* logger.info for info
-* logger.debug for debug info
-* logger.info error for error info
-
-To read more, look here: https://docs.python.org/3/howto/logging.html
+> git clone git@github.com:genughaben/trivia_api.git
+> python -m venv venv
+> pip install -r requirements.txt
 
 ## Setup database
 
@@ -35,14 +29,28 @@ To execute the API app in production mode, run:
 
 ## Testing
 
-To execute tests run:
+To execute all tests run:
 
 > pytest
 
 ## Coverage
 
 To create a coverage report, run:
+The required configuration can be found in setup.cfg.
 
+> coverage run -m pytest
 > coverage html
 
 To view the created report, go to foldeR: htmlcov and open index.html in your favorite browser.
+
+## Debugging / Logging
+
+For debugging, a log file can be visited to see full error messages and stack trace.
+trivia.log.
+
+You can also add more log statements by importing the logger from flaskr/logger.py add write to it using:
+* logger.info for info
+* logger.debug for debug info
+* logger.info error for error info
+
+To read more, look here: https://docs.python.org/3/howto/logging.html
