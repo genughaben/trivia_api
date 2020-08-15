@@ -1,14 +1,13 @@
 import sys
-import os
-from flask import Flask, request, abort, jsonify
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.sql.expression import func
-from flask_cors import CORS
-import random
-from flaskr.validation import *
-from flaskr.logger import logger
 import traceback
 
+from flask import Flask
+from flask_cors import CORS
+from sqlalchemy.sql.expression import func
+from sqlalchemy.exc import IntegrityError
+
+from flaskr.logger import logger
+from flaskr.validation import *
 from models import setup_db, Question, Category
 
 QUESTIONS_PER_PAGE = 10
@@ -73,38 +72,14 @@ def create_app(test_config=None):
     ten questions per page and pagination at the bottom of the screen for three pages.
     Clicking on the page numbers should update the questions. 
     '''
-    def paginate_questions(page):
-        return Question.query.order_by(
-            Question.id.asc()
-        ).paginate(page, per_page=QUESTIONS_PER_PAGE).items
 
-    def paginate_filter_questions(page, field, like_term):
-        return Question.query.order_by(
-            Question.id.asc()
-        ).filter(getattr(Question, field).ilike(f"%{str(like_term).lower()}%") if field != 'category_id' else True
-        ).filter(getattr(Question, field) == like_term if field == 'category_id' else True
-        ).paginate(page, per_page=QUESTIONS_PER_PAGE).items
-
-    def get_paginate_questions(request, field=None, like_term=None):
+    def paginate_questions(request, filter_func=lambda: True):
         page = request.args.get('page', 1, type=int)
-        if field is not None and like_term is not None:
-            questions = paginate_filter_questions(page, field, like_term)
-        else:
-            questions = paginate_questions(page)
+        questions = Question.query.order_by(
+            Question.id.asc()
+        ).filter(filter_func()).paginate(page, per_page=QUESTIONS_PER_PAGE).items
         if len(questions) > 0:
             formatted_questions = [q.format() for q in questions]
-            return formatted_questions
-        else:
-            return []
-
-    def paginate_category_questions(request, category):
-        page = request.args.get('page', 1, type=int)
-        category_questions = Question.query.order_by(
-            Question.id.asc()
-        ).filter(Question.category.has(type=category)
-        ).paginate(page, per_page=QUESTIONS_PER_PAGE).items
-        if len(category_questions) > 0:
-            formatted_questions = [q.format() for q in category_questions]
             return formatted_questions
         else:
             return []
@@ -120,12 +95,12 @@ def create_app(test_config=None):
     def get_questions():
         try:
             return jsonify({
-                'questions': get_paginate_questions(request),
+                'questions': paginate_questions(request),
                 'total_questions': Question.count(),
-                'categories': { category.id: category.type for category in  Category.query.all() }
+                'categories': {category.id: category.type for category in Category.query.all()}
             })
         except:
-            print(sys.exc_info())
+            logger.error(f'{request.path}: 404 with {sys.exc_info()} and trace: {traceback.format_exc()}')
             abort(404)
 
     '''
@@ -136,7 +111,7 @@ def create_app(test_config=None):
     This removal will persist in the database and when you refresh the page. 
     '''
 
-    @app.route('/question/<int:question_id>', methods=['DELETE'])
+    @app.route('/questions/<int:question_id>', methods=['DELETE'])
     def delete_questions(question_id):
         try:
             question = question_or_abort(question_id)
@@ -147,7 +122,7 @@ def create_app(test_config=None):
             return jsonify({
                 'success': True,
                 'deleted': question_id,
-                'questions': get_paginate_questions(request),
+                'questions': paginate_questions(request),
                 'total_questions': Question.count()
             })
         except:
@@ -155,7 +130,7 @@ def create_app(test_config=None):
         finally:
             Question.db_close()
 
-    @app.route('/question/<int:question_id>', methods=['GET'])
+    @app.route('/questions/<int:question_id>', methods=['GET'])
     def get_single_questions(question_id):
         try:
             question = question_or_abort(question_id)
@@ -189,14 +164,14 @@ def create_app(test_config=None):
         try:
             assert valid_string(data, "question"), INVALID_STRING_VALUE_MESSAGE % 'question'
             assert valid_string(data, "answer"), INVALID_STRING_VALUE_MESSAGE % 'answer'
-            assert valid_string(data, "category"), INVALID_STRING_VALUE_MESSAGE % 'category'
+            assert valid_int(data, "category"), INVALID_STRING_VALUE_MESSAGE % 'category'
             assert valid_int(data, "difficulty"), INVALID_INTEGER_VALUE_MESSAGE % 'difficulty'
 
         except AssertionError as assert_error:
             logger.error(f'{request.path}: 442 {assert_error}')
             abort(422, description=str(assert_error))
 
-        category = Category.query.filter_by(type=data['category']).first()
+        category = Category.query.filter_by(id=data['category']).first()
 
         question = Question(
             question=data['question'],
@@ -211,9 +186,12 @@ def create_app(test_config=None):
                 'success': True,
                 'question': question.format()
             })
-        except:
-            abort(404, description=f"{sys.exc_info()} and trace: {traceback.format_exc()}")
+        except IntegrityError:
             logger.error(f'{request.path}: 404 with {sys.exc_info()} and trace: {traceback.format_exc()}')
+            abort(404, description=f"IntegrityError, question was already inserted {sys.exc_info()} and trace: {traceback.format_exc()}")
+        except:
+            logger.error(f'{request.path}: 404 with {sys.exc_info()} and trace: {traceback.format_exc()}')
+            abort(404, description=f"{sys.exc_info()} and trace: {traceback.format_exc()}")
         finally:
             Question.db_close()
 
@@ -227,26 +205,28 @@ def create_app(test_config=None):
     only question that include that string within their question. 
     Try using the word "title" to start. 
     '''
-    @app.route('/question/search')
+
+    @app.route('/questions/search', methods=['POST'])
     def search_questions():
-        try:
-            search_term = request.args.get('q')
-            print(search_term)
-        except Exception as e:
-            logger.error(f'TypeError: {e} at {request.path} with: {sys.exc_info()} and trace: {traceback.format_exc()}')
+        data: json = extract_incoming_json()
 
         try:
-            assert type(search_term) is str, "Search term is not a valid string"
-            assert len(search_term)>3, "Search term too short, type at least 3 characters"
+            assert valid_string(data, "searchTerm"), INVALID_STRING_VALUE_MESSAGE % 'searchTerm'
+            search_term = data.get('searchTerm', '')
+            assert len(search_term) > 3, "Search term too short, type at least 3 characters"
 
         except AssertionError as assert_error:
-            logger.error(f'{assert_error}: 422 at {request.path} with: {sys.exc_info()} and trace: {traceback.format_exc()}')
+            logger.error(
+                f'{assert_error}: 422 at {request.path} with: {sys.exc_info()} and trace: {traceback.format_exc()}')
             abort(422, description=str(assert_error))
+
+        def filter_question():
+            return getattr(Question, 'question').ilike(f"%{str(search_term).lower()}%")
 
         try:
             return jsonify({
                 'success': True,
-                'questions': get_paginate_questions(request, 'question', search_term),
+                'questions': paginate_questions(request, filter_func=filter_question),
                 'total_questions': Question.count()
             })
         except Exception as e:
@@ -264,22 +244,27 @@ def create_app(test_config=None):
     categories in the left column will cause only questions of that 
     category to be shown. 
     '''
-    @app.route('/categories/<string:category>/questions')
-    def get_questions_for_category_type(category):
+
+    @app.route('/categories/<string:category_type>/questions')
+    def get_questions_for_category_type(category_type):
 
         try:
-            assert not category.isnumeric(), "Category should not be numeric"
+            assert not category_type.isnumeric(), "Category should not be numeric"
 
         except AssertionError as assert_error:
-            logger.error(f'{assert_error}: 422 at {request.path} with: {sys.exc_info()} and trace: {traceback.format_exc()}')
+            logger.error(
+                f'{assert_error}: 422 at {request.path} with: {sys.exc_info()} and trace: {traceback.format_exc()}')
             abort(422, description=str(assert_error))
 
         try:
 
+            def filter_question():
+                return Question.category.has(type=category_type)
+
             return jsonify({
                 'success': True,
-                'questions': paginate_category_questions(request, category),
-                'total_questions': Question.query.filter(Question.category.has(type=category)).count()
+                'questions': paginate_questions(request, filter_func=filter_question),
+                'total_questions': Question.query.filter(Question.category.has(type=category_type)).count()
             })
         except Exception as e:
             logger.error(
@@ -299,11 +284,14 @@ def create_app(test_config=None):
                 f'{assert_error}: 422 at {request.path} with: {sys.exc_info()} and trace: {traceback.format_exc()}')
             abort(422, description=str(assert_error))
 
+        def filter_question():
+            return Question.category.has(id=category_id)
+
         try:
             return jsonify({
                 'success': True,
-                'questions': get_paginate_questions(request, 'category_id', category_id),
-                'total_questions': Question.query.filter(category_id==category_id).count()
+                'questions': paginate_questions(request, filter_func=filter_question),
+                'total_questions': Question.query.filter(category_id == category_id).count()
             })
         except Exception as e:
             logger.error(
@@ -329,21 +317,31 @@ def create_app(test_config=None):
         data: json = extract_incoming_json()
 
         try:
-            if 'question_ids' in data:
-                assert valid_numbers_array(data, "question_ids"), INVALID_NUMBERS_ARRAY_MESSAGE_TEMPLATE % 'question_ids'
-            if 'category' in data:
-                assert valid_string(data, "category"), INVALID_STRING_VALUE_MESSAGE % 'category'
+            if 'previous_questions' in data:
+                assert data['previous_questions'] == [] or valid_numbers_array(data,
+                                           "previous_questions"), INVALID_NUMBERS_ARRAY_MESSAGE_TEMPLATE % 'previous_questions'
+            if 'quiz_category' in data:
+                assert valid_string(data['quiz_category'], "type"), INVALID_STRING_VALUE_MESSAGE % 'quiz_category_type'
+                assert valid_string(data['quiz_category'],
+                                    "id"), INVALID_STRING_VALUE_MESSAGE % 'quiz_category_id'
 
         except AssertionError as assert_error:
             logger.error(f'{request.path}: 442 {assert_error}')
             abort(422, description=str(assert_error))
 
-        category = data['category'] if 'category' in data else None
-        question_ids = data['question_ids'] if 'question_ids' in data else None
+        category = data['quiz_category'] if 'quiz_category' in data else None
+        previous_question_ids = data['previous_questions'] if 'previous_questions' in data else None
 
-        q = Question.query\
-            .filter( Question.category.has(type=category) if category else True)\
-            .filter(~Question.id.in_(question_ids) if question_ids else True).order_by(
+        q = Question.query \
+            .filter(Question.category.has(type=category['type']) if category else True) \
+            .filter(~Question.id.in_(previous_question_ids) if previous_question_ids else True).order_by(
+            func.random()
+        ).first()
+
+        # in case no question of ask category are left, fill questions with other categories
+        if q is None or q.count() == 0:
+            q = Question.query \
+                .filter(~Question.id.in_(previous_question_ids) if previous_question_ids else True).order_by(
                 func.random()
             ).first()
 

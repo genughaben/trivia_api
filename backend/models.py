@@ -93,7 +93,7 @@ class Question(db.Model):
             'id': self.id,
             'question': self.question,
             'answer': self.answer,
-            'category': self.category.type,
+            'category': self.category.id,
             'difficulty': self.difficulty
         }
 
