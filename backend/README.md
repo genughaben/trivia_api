@@ -1,6 +1,12 @@
 # Trivia API instructions:
 
-## Getting started:
+## Requirements:
+* Python 3.8 Follow instructions to install the latest version of python for your platform in the [python docs](https://docs.python.org/3/using/unix.html#getting-and-installing-the-latest-version-of-python)
+
+## Getting started - Code, Virtualenv and PIP dependencies
+
+We recommend working within a virtual environment whenever using Python for projects. This keeps your dependencies for each project separate and organaized. Instructions for setting up a virual enviornment for your platform can be found in the [python docs](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/)
+You can review all required dependenices in the requirements.txt.
 
 > git clone git@github.com:genughaben/trivia_api.git
 > python -m venv venv
@@ -39,13 +45,13 @@
 
 To execute the API app in DEBUG mode, run:
 
-> FLASK_APP=flaskr/__init__.py FLASK_ENV=development FLASK_DEBUG=1 flask run
+> FLASK_APP=flaskr/__init__.py FLASK_ENV=development flask run
 
-NB: debug mode e.g. automatically restarts the app, when code changes occur.
+NB: Setting the `FLASK_ENV` variable to `development` will detect file changes and restart the server automatically.
 
 To execute the API app in production mode, run:
 
-> FLASK_APP=flaskr/__init__.py FLASK_ENV=development flask run
+> FLASK_APP=flaskr/__init__.py flask run
 
 ## Testing
 
@@ -85,3 +91,26 @@ You can also add more log statements by importing the logger from flaskr/logger.
 * logger.info error for error info
 
 To read more, look here: https://docs.python.org/3/howto/logging.html
+
+## Endpoints:
+
+This README is missing documentation of your endpoints. Below is an example for your endpoint to get all categories. Please use it as a reference for creating your documentation and resubmit your code. 
+
+Endpoints
+GET '/categories'
+GET ...
+POST ...
+DELETE ...
+
+GET '/categories'
+- Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category
+- Request Arguments: None
+- Returns: An object with a single key, categories, that contains a object of id: category_string key:value pairs. 
+{'1' : "Science",
+'2' : "Art",
+'3' : "Geography",
+'4' : "History",
+'5' : "Entertainment",
+'6' : "Sports"}
+
+```
