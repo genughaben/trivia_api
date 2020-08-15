@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, String, Integer
 
 database_name = "triviadb"
-database_path = "postgres://company_data:rightpassword@{}/{}".format('localhost:5432', database_name)
+database_path = "postgresql://company_data:rightpassword@{}/{}".format('localhost:5432', database_name)
 
 db = SQLAlchemy()
 migrate = Migrate()
