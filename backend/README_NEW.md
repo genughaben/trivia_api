@@ -1,5 +1,17 @@
 # Trivia API instructions:
 
+## Debugging / Logging
+
+For debugging, a log file can be visited to see full error messages and stack trace.
+trivia.log.
+
+You can also add more log statements by importing the logger from flaskr/logger.py add write to it using:
+* logger.info for info
+* logger.debug for debug info
+* logger.info error for error info
+
+To read more, look here: https://docs.python.org/3/howto/logging.html
+
 ## Setup database
 
 > docker exec -it company_data psql -U company_data
