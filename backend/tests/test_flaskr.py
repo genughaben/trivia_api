@@ -151,6 +151,31 @@ class TriviaTestCase(unittest.TestCase):
             q.delete()
 
 
+    def test_search_questions(self):
+        """
+        Inspection
+        ----------
+        > python -m unittest test_flaskr.TriviaTestCase.test_search_questions
+        """
+
+        request_json = {
+            "searchTerm": "Soccer"
+        }
+
+        response = self.client.post(path='questions/search',
+                                    json=request_json,
+                                    content_type='application/json')
+        result: json = response.get_json()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('success' in result)
+        self.assertTrue(result['success'])
+        self.assertTrue('questions' in result)
+        self.assertEqual(len(result['questions']), 2)
+        self.assertTrue('total_questions' in result)
+        self.assertEqual(result['total_questions'], 19)
+
+
 # Make the tests conveniently executable
 if __name__ == "__main__":
     unittest.main()
