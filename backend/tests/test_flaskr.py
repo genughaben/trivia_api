@@ -137,6 +137,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue('total_questions' in result)
         self.assertEqual(result['total_questions'], 19)
 
+
     def test_create_questions(self):
         """
         Inspection

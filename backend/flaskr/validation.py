@@ -11,7 +11,7 @@ def extract_incoming_json(request) -> json:
     data: json = jsonify("")
 
     try:
-        if request.is_json and json.loads(request):
+        if request.is_json and json.loads(request.get_data()):
             data = request.get_json()
         else:
             raise ValueError("Error: incorrect MIME-Type")
