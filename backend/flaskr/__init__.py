@@ -141,7 +141,10 @@ def create_app(test_config=None):
 
     @app.route('/questions', methods=['POST'])
     def create_questions():
-        data: json = extract_incoming_json()
+        try:
+            data: json = extract_incoming_json(request)
+        except Exception as e:
+            abort(400, description=f'Bad request with {e}')
 
         try:
             assert valid_string(data, "question"), INVALID_STRING_VALUE_MESSAGE % 'question'
@@ -191,7 +194,10 @@ def create_app(test_config=None):
 
     @app.route('/questions/search', methods=['POST'])
     def search_questions():
-        data: json = extract_incoming_json()
+        try:
+            data: json = extract_incoming_json(request)
+        except Exception as e:
+            abort(400, description=f'Bad request with {e}')
 
         try:
             assert valid_string(data, "searchTerm"), INVALID_STRING_VALUE_MESSAGE % 'searchTerm'
@@ -269,7 +275,10 @@ def create_app(test_config=None):
 
     @app.route('/play', methods=['POST'])
     def play_trivia():
-        data: json = extract_incoming_json()
+        try:
+            data: json = extract_incoming_json(request)
+        except Exception as e:
+            abort(400, description=f'Bad request with {e}')
 
         try:
             if 'previous_questions' in data:
@@ -317,6 +326,15 @@ def create_app(test_config=None):
     including 404 and 422. 
     '''
 
+    @app.errorhandler(500)
+    def server_errror(error):
+        return jsonify({
+            "success": False,
+            "data": [],
+            "error": 500,
+            "message": f"Server Error: Trivia API failed with: {error}"
+        }), 500
+
     @app.errorhandler(404)
     def not_found(error):
         return jsonify({
@@ -334,5 +352,23 @@ def create_app(test_config=None):
             "error": 422,
             "message": f"Unprocessable: {error}"
         }), 422
+
+    @app.errorhandler(400)
+    def bad_request(error):
+        return jsonify({
+            "success": False,
+            "data": [],
+            "error": 400,
+            "message": f"Bad request: {error}"
+        }), 400
+
+    @app.errorhandler(405)
+    def not_allowed(error):
+        return jsonify({
+            "success": False,
+            "data": [],
+            "error": 405,
+            "message": f"Not allowed: {error}"
+        }), 405
 
     return app

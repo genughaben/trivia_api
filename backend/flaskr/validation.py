@@ -7,11 +7,11 @@ INVALID_STRING_VALUE_MESSAGE = "Error: '%s' not present, not string or invalid v
 INVALID_NUMBERS_ARRAY_MESSAGE_TEMPLATE = "Error: '%s' not present or not a numeric list"
 
 
-def extract_incoming_json() -> json:
+def extract_incoming_json(request) -> json:
     data: json = jsonify("")
 
     try:
-        if request.is_json:
+        if request.is_json and json.loads(request):
             data = request.get_json()
         else:
             raise ValueError("Error: incorrect MIME-Type")

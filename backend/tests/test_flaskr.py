@@ -34,6 +34,25 @@ class TriviaTestCase(unittest.TestCase):
     Write at least one test for each endpoint for successful operation and for expected errors.
     """
 
+    def test_incoming_payload_not_json(self):
+        """
+        Inspection
+        ----------
+        > python -m unittest test_flaskr.TriviaTestCase.test_categories
+        """
+
+        not_json_input = False
+
+        response = self.client.post(path='/questions',
+                                    json=not_json_input,
+                                    content_type='application/json')
+        result: json = response.get_json()
+
+        self.assertEqual(response.status_code, 400)
+        self.assertTrue('success' in result)
+        self.assertEqual(result['success'], False)
+        self.assertTrue(result['message'].startswith('Bad request: '))
+
     def test_categories(self):
         """
         Inspection
@@ -57,18 +76,33 @@ class TriviaTestCase(unittest.TestCase):
         > python -m unittest test_flaskr.TriviaTestCase.test_list_questions
         """
 
-        response = self.client.get('/questions')
+        response = self.client.get('/questions?page=2')
         result: json = response.get_json()
 
         self.assertEqual(response.status_code, 200)
         self.assertTrue('success' in result)
         self.assertTrue(result['success'])
         self.assertTrue('questions' in result)
-        self.assertEqual(len(result['questions']), 10)
+        self.assertEqual(len(result['questions']), 9)
         self.assertTrue('total_questions' in result)
         self.assertEqual(result['total_questions'], 19)
         self.assertTrue('categories' in result)
         self.assertEqual(len(result['categories']), 6)
+
+    def test_return_404_for_page_count_too_high(self):
+        """
+        Inspection
+        ----------
+        > python -m unittest test_flaskr.TriviaTestCase.test_return_404_for_page_count_too_high
+        """
+
+        response = self.client.get('/questions?page=4')
+        result: json = response.get_json()
+
+        self.assertEqual(response.status_code, 404)
+        self.assertTrue('success' in result)
+        self.assertEqual(result['success'], False)
+        self.assertTrue(result['message'].startswith('Not found: '))
 
 
     def test_delete_questions(self):
@@ -151,8 +185,6 @@ class TriviaTestCase(unittest.TestCase):
             q.delete()
 
 
-
-
     def test_search_questions(self):
         """
         Inspection
@@ -197,6 +229,75 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(len(result['questions']), 2)
         self.assertTrue('total_questions' in result)
         self.assertEqual(result['total_questions'], 19)
+
+
+    def test_play(self):
+        """
+        Cases:
+        * first question from any category
+        * second question from any category
+        * another question from category with not enough questions for a whole game is loaded, hence it is drawn from all
+        Inspection
+        ----------
+        > python -m unittest test_flaskr.TriviaTestCase.test_play
+        """
+
+        # CASE #1 first question from any category (here: Sports)
+
+        category_type = "Sports"
+        category_id = 6 # category_id for category 'Sports'
+
+        request_json = {
+            "previous_questions": [],
+            "quiz_category": {"type": f"{category_type}", "id": f"{category_id}"},
+        }
+
+        response = self.client.post(path='play',
+                                    json=request_json,
+                                    content_type='application/json')
+        result: json = response.get_json()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('success' in result)
+        self.assertTrue(result['success'])
+        self.assertTrue('question' in result)
+        self.assertEqual(result['question']['category'], int(category_id))
+
+        # CASE #2 second question from any category
+
+        request_json = {
+            "previous_questions": [10],
+            "quiz_category": {"type": f"{category_type}", "id": f"{category_id}"},
+        }
+
+        response = self.client.post(path='play',
+                                    json=request_json,
+                                    content_type='application/json')
+        result: json = response.get_json()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('success' in result)
+        self.assertTrue(result['success'])
+        self.assertTrue('question' in result)
+        self.assertEqual(result['question']['category'], int(category_id))
+
+        # CASE #3 first question from any category (here: Sports)
+
+        request_json = {
+            "previous_questions": [10, 11],
+            "quiz_category": {"type": f"{category_type}", "id": f"{category_id}"},
+        }
+
+        response = self.client.post(path='play',
+                                    json=request_json,
+                                    content_type='application/json')
+        result: json = response.get_json()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('success' in result)
+        self.assertTrue(result['success'])
+        self.assertTrue('question' in result)
+        self.assertNotEqual(result['question']['category'], int(category_id))
 
 
 # Make the tests conveniently executable
