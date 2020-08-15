@@ -6,7 +6,7 @@ from flask_cors import CORS
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.sql.expression import func
 
-import flaskr.logger
+from flaskr.logger import logger
 from flaskr.validation import *
 from models import setup_db, Question, Category
 
