@@ -1,9 +1,9 @@
+import logging
 import os
 import sys
-import logging
+
 
 def init_logger_singleton():
-
     global logger
 
     logger = logging.getLogger(name='trivia_logger')
@@ -22,5 +22,6 @@ def init_logger_singleton():
     filehandler.setLevel(logging.DEBUG)
     filehandler.setFormatter(formatter)
     logger.addHandler(filehandler)
+
 
 init_logger_singleton()

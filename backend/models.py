@@ -1,8 +1,6 @@
-import os
-from sqlalchemy import Column, String, Integer, create_engine
-from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-import json
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import Column, String, Integer
 
 database_name = "triviadb"
 database_path = "postgres://company_data:rightpassword@{}/{}".format('localhost:5432', database_name)

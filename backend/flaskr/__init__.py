@@ -3,8 +3,8 @@ import traceback
 
 from flask import Flask
 from flask_cors import CORS
-from sqlalchemy.sql.expression import func
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.sql.expression import func
 
 from flaskr.logger import logger
 from flaskr.validation import *
@@ -188,7 +188,8 @@ def create_app(test_config=None):
             })
         except IntegrityError:
             logger.error(f'{request.path}: 404 with {sys.exc_info()} and trace: {traceback.format_exc()}')
-            abort(404, description=f"IntegrityError, question was already inserted {sys.exc_info()} and trace: {traceback.format_exc()}")
+            abort(404,
+                  description=f"IntegrityError, question was already inserted {sys.exc_info()} and trace: {traceback.format_exc()}")
         except:
             logger.error(f'{request.path}: 404 with {sys.exc_info()} and trace: {traceback.format_exc()}')
             abort(404, description=f"{sys.exc_info()} and trace: {traceback.format_exc()}")
@@ -319,7 +320,7 @@ def create_app(test_config=None):
         try:
             if 'previous_questions' in data:
                 assert data['previous_questions'] == [] or valid_numbers_array(data,
-                                           "previous_questions"), INVALID_NUMBERS_ARRAY_MESSAGE_TEMPLATE % 'previous_questions'
+                                                                               "previous_questions"), INVALID_NUMBERS_ARRAY_MESSAGE_TEMPLATE % 'previous_questions'
             if 'quiz_category' in data:
                 assert valid_string(data['quiz_category'], "type"), INVALID_STRING_VALUE_MESSAGE % 'quiz_category_type'
                 assert valid_string(data['quiz_category'],

@@ -1,9 +1,11 @@
 from typing import Any
+
 from flask import json, jsonify, request, abort
 
 INVALID_INTEGER_VALUE_MESSAGE = "Error: '%s' not present, not integer or invalid value"
 INVALID_STRING_VALUE_MESSAGE = "Error: '%s' not present, not string or invalid value"
 INVALID_NUMBERS_ARRAY_MESSAGE_TEMPLATE = "Error: '%s' not present or not a numeric list"
+
 
 def extract_incoming_json() -> json:
     data: json = jsonify("")
@@ -17,6 +19,7 @@ def extract_incoming_json() -> json:
         abort(400, description="Error: payload is not a valid json")
 
     return data
+
 
 def has_key(data: dict, key: str) -> bool:
     """ Checks if a dctionary (dict) contains a key """
@@ -57,10 +60,12 @@ def valid_string(data: dict, key: str) -> bool:
     return has_key(data, key) and \
            check_string(data[key])
 
+
 def valid_int(data: dict, key: str) -> bool:
     """ Checks dict contains key whose associated values represent a string """
     return has_key(data, key) and \
            check_int(data[key])
+
 
 def valid_strings_array(data: dict, key: str) -> bool:
     """ Checks if dict contains a key whose associated value represents a list o number (int or float) """
