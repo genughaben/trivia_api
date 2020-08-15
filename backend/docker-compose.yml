@@ -1,0 +1,21 @@
+version: '3'
+services:
+  trivia_database:
+    image: postgres:10.10-alpine
+    container_name: company_data
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: 'postgres'
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: 'postgres'
+    volumes:
+      - ./../init_postgres.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - right
+
+
+networks:
+  right:
+    external: true

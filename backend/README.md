@@ -1,116 +1,87 @@
-# Full Stack Trivia API Backend
+# Trivia API instructions:
 
-## Getting Started
+## Getting started:
 
-### Installing Dependencies
+> git clone git@github.com:genughaben/trivia_api.git
+> python -m venv venv
+> pip install -r requirements.txt
 
-#### Python 3.7
+## Setup database
 
-Follow instructions to install the latest version of python for your platform in the [python docs](https://docs.python.org/3/using/unix.html#getting-and-installing-the-latest-version-of-python)
+### Setup and run postgresql database management system in docker:
 
-#### Virtual Enviornment
+> docker-compose up
 
-We recommend working within a virtual environment whenever using Python for projects. This keeps your dependencies for each project separate and organaized. Instructions for setting up a virual enviornment for your platform can be found in the [python docs](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/)
+### Add production database:
 
-#### PIP Dependencies
+> docker exec -it trivia_dbms psql -U postgres
+> CREATE DATABASE triviadb;
+> \q
+> export FLASK_APP=flaskr
+> export FLASK_ENV=development
+> flask db init
+> flask db migrate
+> flask db upgrade
+> docker exec -i trivia_dbms psql -U postgres -d triviadb < trivia_content.psql
 
-Once you have your virtual environment setup and running, install dependencies by naviging to the `/backend` directory and running:
+### Add testing database:
 
-```bash
-pip install -r requirements.txt
-```
+> docker exec -it trivia_dbms psql -U postgres
+> CREATE DATABASE trivia_test;
+> \q
+> docker exec -i trivia_dbms psql -U postgres -d trivia_test < trivia.psql
+> docker exec -it trivia_dbms psql -U postgres
+> \c trivia_test
+> ALTER TABLE questions RENAME category TO category_id
 
-This will install all of the required packages we selected within the `requirements.txt` file.
 
-##### Key Dependencies
+## Run API app:
 
-- [Flask](http://flask.pocoo.org/)  is a lightweight backend microservices framework. Flask is required to handle requests and responses.
+To execute the API app in DEBUG mode, run:
 
-- [SQLAlchemy](https://www.sqlalchemy.org/) is the Python SQL toolkit and ORM we'll use handle the lightweight sqlite database. You'll primarily work in app.py and can reference models.py. 
+> FLASK_APP=flaskr/__init__.py FLASK_ENV=development FLASK_DEBUG=1 flask run
 
-- [Flask-CORS](https://flask-cors.readthedocs.io/en/latest/#) is the extension we'll use to handle cross origin requests from our frontend server. 
+NB: debug mode e.g. automatically restarts the app, when code changes occur.
 
-## Database Setup
-With Postgres running, restore a database using the trivia.psql file provided. From the backend folder in terminal run:
-```bash
-psql trivia < trivia.psql
-```
+To execute the API app in production mode, run:
 
-## Running the server
-
-From within the `backend` directory first ensure you are working using your created virtual environment.
-
-To run the server, execute:
-
-```bash
-export FLASK_APP=flaskr
-export FLASK_ENV=development
-flask run
-```
-
-Setting the `FLASK_ENV` variable to `development` will detect file changes and restart the server automatically.
-
-Setting the `FLASK_APP` variable to `flaskr` directs flask to use the `flaskr` directory and the `__init__.py` file to find the application. 
-
-## Tasks
-
-One note before you delve into your tasks: for each endpoint you are expected to define the endpoint and response data. The frontend will be a plentiful resource because it is set up to expect certain endpoints and response data formats already. You should feel free to specify endpoints in your own way; if you do so, make sure to update the frontend or you will get some unexpected behavior. 
-
-1. Use Flask-CORS to enable cross-domain requests and set response headers. 
-2. Create an endpoint to handle GET requests for questions, including pagination (every 10 questions). This endpoint should return a list of questions, number of total questions, current category, categories. 
-3. Create an endpoint to handle GET requests for all available categories. 
-4. Create an endpoint to DELETE question using a question ID. 
-5. Create an endpoint to POST a new question, which will require the question and answer text, category, and difficulty score. 
-6. Create a POST endpoint to get questions based on category. 
-7. Create a POST endpoint to get questions based on a search term. It should return any questions for whom the search term is a substring of the question. 
-8. Create a POST endpoint to get questions to play the quiz. This endpoint should take category and previous question parameters and return a random questions within the given category, if provided, and that is not one of the previous questions. 
-9. Create error handlers for all expected errors including 400, 404, 422 and 500. 
-
-REVIEW_COMMENT
-```
-This README is missing documentation of your endpoints. Below is an example for your endpoint to get all categories. Please use it as a reference for creating your documentation and resubmit your code. 
-
-Endpoints
-GET '/categories'
-GET ...
-POST ...
-DELETE ...
-
-GET '/categories'
-- Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category
-- Request Arguments: None
-- Returns: An object with a single key, categories, that contains a object of id: category_string key:value pairs. 
-{'1' : "Science",
-'2' : "Art",
-'3' : "Geography",
-'4' : "History",
-'5' : "Entertainment",
-'6' : "Sports"}
-
-```
-
+> FLASK_APP=flaskr/__init__.py FLASK_ENV=development flask run
 
 ## Testing
-To run the tests, run
-```
-dropdb trivia_test
-createdb trivia_test
-psql trivia_test < trivia.psql
-python test_flaskr.py
-```
 
-## Use Database in docker
+### Automatic Testing:
 
-### Setup postgres in docker container and empty trivia Database
+To execute all tests run:
 
-For a user company_data create a DB called trivia.
-For that, enter container and execute CREATE DATABASE trivia.
+> pytest
 
-### Populate trivia DB
+If you want to run individual tests, go into the tests folder and look for INSPECTION section in the test comments.
+There are commands to execute individual tests. Adapt those to your liking, if applicable.
 
-From backend folder execute:
+### Manual Testing
 
-```
-cat trivia.psql | docker exec -i company_data psql -U company_data -d trivia
-cat trivia_content.psql | docker exec -i company_data psql -U company_data -d trivia
-```
+To inspect the endpoints when of an running app, you can use the import and use the postman collection provided in the file:
+
+backend/trivia.postman_collection.json
+
+## Coverage
+
+To create a coverage report, run:
+The required configuration can be found in setup.cfg.
+
+> coverage run -m pytest
+> coverage html
+
+To view the created report, go to foldeR: htmlcov and open index.html in your favorite browser.
+
+## Debugging / Logging
+
+For debugging, a log file can be visited to see full error messages and stack trace.
+trivia.log.
+
+You can also add more log statements by importing the logger from flaskr/logger.py add write to it using:
+* logger.info for info
+* logger.debug for debug info
+* logger.info error for error info
+
+To read more, look here: https://docs.python.org/3/howto/logging.html
