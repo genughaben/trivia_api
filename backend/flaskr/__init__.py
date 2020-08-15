@@ -128,22 +128,6 @@ def create_app(test_config=None):
         finally:
             Question.db_close()
 
-    @app.route('/questions/<int:question_id>', methods=['GET'])
-    def get_single_questions(question_id):
-        try:
-            question = question_or_abort(question_id)
-            if question is None:
-                abort(404)
-
-            return jsonify({
-                'success': True,
-                'question': question.format()
-            })
-        except:
-            abort(404)
-        finally:
-            Question.db_close()
-
     '''
     @TODO: 
     Create an endpoint to POST a new question, 
