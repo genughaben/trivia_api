@@ -4,7 +4,7 @@ import json
 from flask_sqlalchemy import SQLAlchemy
 
 from flaskr import create_app
-from models import setup_db
+from models import setup_db, Question, Category
 
 
 class TriviaTestCase(unittest.TestCase):
@@ -70,6 +70,38 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue('categories' in result)
         self.assertEqual(len(result['categories']), 6)
 
+
+    def test_delete_questions(self):
+        """
+        Inspection
+        ----------
+        > python -m unittest test_flaskr.TriviaTestCase.test_list_questions
+        """
+
+        question = Question(
+            question="Example question?",
+            answer="Example answer",
+            difficulty=3,
+            category=Category.query.filter_by(type="Sports").first()
+        )
+
+        question.insert()
+        question_id = question.id
+
+        self.assertEqual(Question.count(), 20)
+
+        response = self.client.delete(f'/questions/{question_id}')
+        result: json = response.get_json()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('success' in result)
+        self.assertTrue(result['success'])
+        self.assertTrue('deleted' in result)
+        self.assertEqual(result['deleted'], question_id)
+        self.assertTrue('questions' in result)
+        self.assertEqual(len(result['questions']), 10)
+        self.assertTrue('total_questions' in result)
+        self.assertEqual(result['total_questions'], 19)
 
 
 # Make the tests conveniently executable
