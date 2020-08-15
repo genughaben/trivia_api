@@ -29,9 +29,20 @@ To execute the API app in production mode, run:
 
 ## Testing
 
+### Automatic Testing:
+
 To execute all tests run:
 
 > pytest
+
+If you want to run individual tests, go into the tests folder and look for INSPECTION section in the test comments.
+There are commands to execute individual tests. Adapt those to your liking, if applicable.
+
+### Manual Testing
+
+To inspect the endpoints when of an running app, you can use the import and use the postman collection provided in the file:
+
+backend/trivia.postman_collection.json
 
 ## Coverage
 

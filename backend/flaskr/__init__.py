@@ -12,6 +12,13 @@ from models import setup_db, Question, Category
 
 QUESTIONS_PER_PAGE = 10
 
+'''
+******
+*** NB: For each endpoint, usage examples can be found in the postman collection 'trivia.postman_collection.json'
+******
+'''
+
+
 
 def create_app(test_config=None):
     # create and configure the app
@@ -183,7 +190,7 @@ def create_app(test_config=None):
 
     '''
     @TODO: 
-    Create a POST endpoint to get questions based on a search term. 
+    Create a POST endpoint to get questions based on a search term.
     It should return any questions for whom the search term 
     is a substring of the question. 
   
@@ -225,17 +232,12 @@ def create_app(test_config=None):
         finally:
             Question.db_close()
 
-    '''
-    @TODO: 
-    Create a GET endpoint to get questions based on category. 
-  
-    TEST: In the "List" tab / main screen, clicking on one of the 
-    categories in the left column will cause only questions of that 
-    category to be shown. 
-    '''
 
     @app.route('/categories/<int:category_id>/questions')
     def get_questions_for_category_id(category_id):
+        '''
+        GET endpoint to get questions based on category.
+        '''
 
         try:
             assert type(category_id) is int, "Category_id should be numeric"
@@ -261,20 +263,19 @@ def create_app(test_config=None):
         finally:
             Question.db_close()
 
-    '''
-    @TODO: 
-    Create a POST endpoint to get questions to play the quiz. 
-    This endpoint should take category and previous question parameters 
-    and return a random questions within the given category, 
-    if provided, and that is not one of the previous questions. 
-  
-    TEST: In the "Play" tab, after a user selects "All" or a category,
-    one question at a time is displayed, the user is allowed to answer
-    and shown whether they were correct or not. 
-    '''
 
     @app.route('/play', methods=['POST'])
     def play_trivia():
+        '''
+        POST Endpoint to get questions to play the quiz.
+
+        This endpoint takes a category and previous question parameters
+        and returns a random question within the given category,
+        if provided, and that is not one of the previous questions.
+
+        If there are not enough questions in a given category, all questions are asked,
+        and the the remaining questions are drawn from category 'ALL'
+        '''
         try:
             data: json = extract_incoming_json(request)
         except Exception as e:
