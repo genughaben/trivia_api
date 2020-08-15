@@ -151,6 +151,8 @@ class TriviaTestCase(unittest.TestCase):
             q.delete()
 
 
+
+
     def test_search_questions(self):
         """
         Inspection
@@ -165,6 +167,27 @@ class TriviaTestCase(unittest.TestCase):
         response = self.client.post(path='questions/search',
                                     json=request_json,
                                     content_type='application/json')
+        result: json = response.get_json()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('success' in result)
+        self.assertTrue(result['success'])
+        self.assertTrue('questions' in result)
+        self.assertEqual(len(result['questions']), 2)
+        self.assertTrue('total_questions' in result)
+        self.assertEqual(result['total_questions'], 19)
+
+
+    def test_get_questions_by_category_id(self):
+        """
+        Inspection
+        ----------
+        > python -m unittest test_flaskr.TriviaTestCase.test_get_questions_by_category_id
+        """
+
+        category_id = 6 # id for category 'Sports'
+
+        response = self.client.get(path=f'categories/{category_id}/questions')
         result: json = response.get_json()
 
         self.assertEqual(response.status_code, 200)
