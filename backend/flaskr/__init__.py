@@ -228,34 +228,6 @@ def create_app(test_config=None):
     category to be shown. 
     '''
 
-    @app.route('/categories/<string:category_type>/questions')
-    def get_questions_for_category_type(category_type):
-
-        try:
-            assert not category_type.isnumeric(), "Category should not be numeric"
-
-        except AssertionError as assert_error:
-            logger.error(
-                f'{assert_error}: 422 at {request.path} with: {sys.exc_info()} and trace: {traceback.format_exc()}')
-            abort(422, description=str(assert_error))
-
-        try:
-
-            def filter_question():
-                return Question.category.has(type=category_type)
-
-            return jsonify({
-                'success': True,
-                'questions': paginate_questions(request, filter_func=filter_question),
-                'total_questions': Question.query.filter(Question.category.has(type=category_type)).count()
-            })
-        except Exception as e:
-            logger.error(
-                f'{e}: 404 at {request.path} with: {sys.exc_info()} and trace: {traceback.format_exc()}')
-            abort(404)
-        finally:
-            Question.db_close()
-
     @app.route('/categories/<int:category_id>/questions')
     def get_questions_for_category_id(category_id):
 
