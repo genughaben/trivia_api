@@ -1,0 +1,26 @@
+  Delivers categories as dictionary mapping id on type
+    ---
+  tags:
+    - V1
+  definitions:
+    import: "flaskr/docs/definitions.yaml"
+  responses:
+    200:
+      description: A dictionary of (category_id, category_type) pairs
+      example:
+        success: true
+      schema:
+        type: object
+        properties:
+          categories:
+            type: string
+            example:
+              1: Science,
+              2: Art,
+              3: Geography,
+              4: History,
+              5: Entertainment,
+              6: Sport
+          success:
+            type: boolean
+            example: true

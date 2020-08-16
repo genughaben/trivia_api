@@ -2,6 +2,8 @@ import sys
 import traceback
 
 from flask import Flask
+from flasgger import Swagger
+from flasgger import swag_from
 from flask_cors import CORS
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.sql.expression import func
@@ -25,6 +27,12 @@ def create_app(test_config=None):
         app.config.from_pyfile('./app_local.cfg')
         logger.debug(f"environment: {app.config}")
 
+    app.config['SWAGGER'] = {
+        'title': 'Trivia API',
+        'uiversion': 3,
+    }
+    Swagger(app)
+
     setup_db(app)
 
     # Seting up CORS. Allow '*' for origins.
@@ -42,6 +50,7 @@ def create_app(test_config=None):
 
 
     @app.route('/categories')
+    @swag_from('docs/get_categories.yaml')
     def get_categories():
         '''
         Endpoint to handle GET requests for all available categories.

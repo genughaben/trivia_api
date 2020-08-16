@@ -1,0 +1,9 @@
+Category:
+  type: object
+  properties:
+    id:
+      type: string
+      example: "6"
+    type:
+      type: string
+      example: "Sports"
