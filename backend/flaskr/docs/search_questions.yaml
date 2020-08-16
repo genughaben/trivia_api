@@ -1,0 +1,35 @@
+  Create a Question for given details
+    ---
+  tags:
+    - V1
+  definitions:
+    import: "flaskr/docs/definitions.yaml"
+  parameters:
+    - name: body
+      in: body
+      schema:
+        type: object
+        properties:
+          searchTerm:
+            type: string
+            description: Search term that must be part of the question
+            required: true
+            example: "Soccer"
+  responses:
+    200:
+      description: Array of Question found whose question string included the searchTerm
+      example:
+        success: true
+      schema:
+        type: object
+        properties:
+          questions:
+            type: array
+            items:
+              $ref: '#/definitions/Question'
+          success:
+            type: boolean
+            example: true
+          total_questions:
+            type: integer
+            example: 19

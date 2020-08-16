@@ -187,6 +187,7 @@ def create_app(test_config=None):
 
 
     @app.route('/questions/search', methods=['POST'])
+    @swag_from('docs/search_questions.yaml')
     def search_questions():
         '''
         Endpoint to get questions based on a search term.
