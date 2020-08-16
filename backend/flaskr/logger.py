@@ -1,7 +1,9 @@
 import logging
 import os
 import sys
+from logging import Logger
 
+logger: Logger
 
 def init_logger_singleton():
     global logger
