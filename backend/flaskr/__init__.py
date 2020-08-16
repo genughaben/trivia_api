@@ -26,6 +26,9 @@ def create_app(test_config=None):
     if test_config is None:
         app.config.from_pyfile('./app_local.cfg')
         logger.debug(f"environment: {app.config}")
+    elif test_config:
+        app.config.from_pyfile('./app_test.cfg')
+        logger.debug(f"environment: {app.config}")
 
     app.config['SWAGGER'] = {
         'title': 'Trivia API',
