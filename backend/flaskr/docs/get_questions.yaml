@@ -1,0 +1,33 @@
+  Delivers a list of questions, the cateogries and success status
+    ---
+  tags:
+    - V1
+  definitions:
+    import: "flaskr/docs/definitions.yaml"
+  parameters:
+    - in: query
+      name: page
+      type: integer
+      description: The page num for pagination
+      required: false
+      example: 2
+  responses:
+    200:
+      description: An array of Question and a dictionary of (category_id, category_type) pairs.
+      example:
+        success: true
+      schema:
+        type: object
+        properties:
+          categories:
+            $ref: '#/definitions/Categories'
+          questions:
+            type: array
+            items:
+              $ref: '#/definitions/Question'
+          success:
+            type: boolean
+            example: true
+          total_questions:
+            type: integer
+            example: 19

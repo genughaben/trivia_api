@@ -1,0 +1,45 @@
+  Get a Question for a Trivia quiz game
+    ---
+  tags:
+  - V1
+  definitions:
+    import: "flaskr/docs/definitions.yaml"
+  parameters:
+    - name: body
+      in: body
+      schema:
+        type: object
+        properties:
+          previous_questions:
+            type: array
+            items:
+              type: int
+            description: Array of Question ids that have been asked previously in this quiz round
+            required: true
+            example:
+              [10, 11]
+          quiz_category:
+            type: object
+            properties:
+              type:
+                type: string
+                example: "Sports"
+                description: Category type - prefereably questions of this Category are being asked, unless there are not enough available
+              id:
+                type: string
+                example: "6"
+                description: Category id - prefereably questions of this Category are being asked, unless there are not enough available, in this case also questions from ALL are drawn
+            required: false
+  responses:
+    200:
+      description: Created Question
+      example:
+        success: true
+      schema:
+        type: object
+        properties:
+          question:
+            $ref: '#/definitions/Question'
+          success:
+            type: boolean
+            example: true

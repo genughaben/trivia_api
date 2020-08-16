@@ -1,0 +1,31 @@
+  Get questions for a given category id
+    ---
+  tags:
+    - V1
+  definitions:
+    import: "flaskr/docs/definitions.yaml"
+  parameters:
+    - in: path
+      name: category_id
+      type: integer
+      description: Category id for which quesitons should be returned
+      required: true
+      example: 6
+  responses:
+    200:
+      description: Array of Question which are in Category given by Category id
+      example:
+        success: true
+      schema:
+        type: object
+        properties:
+          questions:
+            type: array
+            items:
+              $ref: '#/definitions/Question'
+          success:
+            type: boolean
+            example: true
+          total_questions:
+            type: integer
+            example: 19
