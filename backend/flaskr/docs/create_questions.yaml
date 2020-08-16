@@ -1,0 +1,46 @@
+  Create a Question for given details
+    ---
+  tags:
+    - V1
+  definitions:
+    import: "flaskr/docs/definitions.yaml"
+  parameters:
+    - name: question
+      in: body
+      type: string
+      description: The question to be asked
+      required: true
+      example: "In what year was M.K. Gandhi born?"
+    - name: answer
+      in: body
+      type: string
+      description: The answer to the question
+      required: true
+      example: "1869"
+    - name: difficulty
+      in: body
+      type: integer
+      enum: [1,2,3,4,5]
+      description: The difficulty of the question
+      required: true
+      example: 3
+    - name: category
+      in: body
+      type: integer
+      enum: [1,2,3,4,5,6]
+      description: The id of the cateogry that the question belongs to
+      required: true
+      example: 4
+  responses:
+    200:
+      description: Deleted Question with given id
+      example:
+        success: true
+      schema:
+        type: object
+        properties:
+          question:
+            $ref: '#/definitions/Question'
+          success:
+            type: boolean
+            example: true

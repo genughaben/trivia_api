@@ -138,6 +138,7 @@ def create_app(test_config=None):
 
 
     @app.route('/questions', methods=['POST'])
+    @swag_from('docs/create_questions.yaml')
     def create_questions():
         '''
         Endpoint to POST a new question,
