@@ -29,3 +29,6 @@
           success:
             type: boolean
             example: true
+          total_questions:
+            type: integer
+            example: 19
