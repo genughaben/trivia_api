@@ -10,19 +10,21 @@ from flaskr.logger import logger
 from flaskr.validation import *
 from models import setup_db, Question, Category
 
+'''
+*********************************************************************************************************************
+*** NB: For each endpoint, usage examples can be found in the postman collection 'trivia.postman_collection.json' ***
+*********************************************************************************************************************
+'''
+
 QUESTIONS_PER_PAGE = 10
-
-'''
-******
-*** NB: For each endpoint, usage examples can be found in the postman collection 'trivia.postman_collection.json'
-******
-'''
-
-
 
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__)
+    if test_config is None:
+        app.config.from_pyfile('./app_local.cfg')
+        logger.debug(f"environment: {app.config}")
+
     setup_db(app)
 
     # Seting up CORS. Allow '*' for origins.
@@ -38,12 +40,12 @@ def create_app(test_config=None):
         response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
         return response
 
-    '''
-    Create an endpoint to handle GET requests for all available categories.
-    '''
 
     @app.route('/categories')
     def get_categories():
+        '''
+        Endpoint to handle GET requests for all available categories.
+        '''
         try:
             categories = Category.query.all()
             category_types = {}
@@ -59,18 +61,6 @@ def create_app(test_config=None):
             'categories': category_types
         })
 
-    '''
-    @TODO: 
-    Create an endpoint to handle GET requests for questions, 
-    including pagination (every 10 questions). 
-    This endpoint should return a list of questions, 
-    number of total questions, current category, categories. 
-  
-    TEST: At this point, when you start the application
-    you should see questions and categories generated,
-    ten questions per page and pagination at the bottom of the screen for three pages.
-    Clicking on the page numbers should update the questions. 
-    '''
 
     def paginate_questions(request, filter_func=lambda: True):
         page = request.args.get('page', 1, type=int)
@@ -92,6 +82,12 @@ def create_app(test_config=None):
 
     @app.route('/questions')
     def get_questions():
+        '''
+        Endpoint to handle GET requests for questions,
+        including pagination (every 10 questions).
+        This endpoint should return a list of questions,
+        number of total questions, current category, categories.
+        '''
         try:
             return jsonify({
                 'success': True,
@@ -103,16 +99,12 @@ def create_app(test_config=None):
             logger.error(f'{request.path}: 404 with {sys.exc_info()} and trace: {traceback.format_exc()}')
             abort(404)
 
-    '''
-    @TODO: 
-    Create an endpoint to DELETE question using a question ID. 
-  
-    TEST: When you click the trash icon next to a question, the question will be removed.
-    This removal will persist in the database and when you refresh the page. 
-    '''
 
     @app.route('/questions/<int:question_id>', methods=['DELETE'])
     def delete_questions(question_id):
+        '''
+        Endpoint to DELETE question using a question ID.
+        '''
         try:
             question = question_or_abort(question_id)
             if question is None:
@@ -130,19 +122,14 @@ def create_app(test_config=None):
         finally:
             Question.db_close()
 
-    '''
-    @TODO: 
-    Create an endpoint to POST a new question, 
-    which will require the question and answer text, 
-    category, and difficulty score.
-  
-    TEST: When you submit a question on the "Add" tab, 
-    the form will clear and the question will appear at the end of the last page
-    of the questions list in the "List" tab.  
-    '''
 
     @app.route('/questions', methods=['POST'])
     def create_questions():
+        '''
+        Endpoint to POST a new question,
+        which will require the question and answer text,
+        category, and difficulty score.
+        '''
         try:
             data: json = extract_incoming_json(request)
         except Exception as e:
@@ -183,19 +170,14 @@ def create_app(test_config=None):
         finally:
             Question.db_close()
 
-    '''
-    @TODO: 
-    Create a POST endpoint to get questions based on a search term.
-    It should return any questions for whom the search term 
-    is a substring of the question. 
-  
-    TEST: Search by any phrase. The questions list will update to include 
-    only question that include that string within their question. 
-    Try using the word "title" to start. 
-    '''
 
     @app.route('/questions/search', methods=['POST'])
     def search_questions():
+        '''
+        Endpoint to get questions based on a search term.
+        It should return any questions for whom the search term
+        is a substring of the question.
+        '''
         try:
             data: json = extract_incoming_json(request)
         except Exception as e:
@@ -317,9 +299,7 @@ def create_app(test_config=None):
             Question.db_close()
 
     '''
-    @TODO: 
-    Create error handlers for all expected errors 
-    including 404 and 422. 
+    Error handlers for all expected errors codes 400, 404, 405, 422 and 500 
     '''
 
     @app.errorhandler(500)

@@ -1,9 +1,7 @@
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, String, Integer
-
-database_name = "triviadb"
-database_path = "postgresql://postgres:postgres@{}/{}".format('localhost:5432', database_name)
+from flaskr.logger import logger
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -14,9 +12,7 @@ setup_db(app)
 '''
 
 
-def setup_db(app, database_path=database_path):
-    app.config["SQLALCHEMY_DATABASE_URI"] = database_path
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+def setup_db(app):
     db.app = app
     db.init_app(app)
     migrate.init_app(app, db)
