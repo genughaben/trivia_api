@@ -33,7 +33,7 @@
       example: 4
   responses:
     200:
-      description: Deleted Question with given id
+      description: Created Question
       example:
         success: true
       schema:
