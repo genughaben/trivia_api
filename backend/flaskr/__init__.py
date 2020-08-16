@@ -90,12 +90,16 @@ def create_app(test_config=None):
             return question
 
     @app.route('/questions')
+    @swag_from('docs/get_questions.yaml')
     def get_questions():
         '''
-        Endpoint to handle GET requests for questions,
+        GET questions
         including pagination (every 10 questions).
-        This endpoint should return a list of questions,
-        number of total questions, current category, categories.
+        Return a
+         * list of questions,
+         * number of total questions
+         * current category
+         * categories.
         '''
         try:
             return jsonify({

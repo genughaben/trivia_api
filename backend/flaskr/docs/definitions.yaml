@@ -7,3 +7,21 @@ Categories:
     4: History,
     5: Entertainment,
     6: Sport
+Question:
+  type: object
+  properties:
+    id:
+      type: int
+      example: 1869
+    question:
+      type: string
+      example: "In what year was M.K. Gandhi born?"
+    answer:
+      type: string
+      example: "1869"
+    difficulty:
+      type: int
+      example: 4
+    category_id:
+      type: int
+      example: 4

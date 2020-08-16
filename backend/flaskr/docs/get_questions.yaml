@@ -1,0 +1,23 @@
+  Delivers a list of questions, the cateogries and success status
+    ---
+  tags:
+    - V1
+  definitions:
+    import: "flaskr/docs/definitions.yaml"
+  responses:
+    200:
+      description: Delivers an array of Question and a dictionary of (category_id, category_type) pairs.
+      example:
+        success: true
+      schema:
+        type: object
+        properties:
+          categories:
+            $ref: '#/definitions/Categories'
+          questions:
+            type: array
+            items:
+              $ref: '#/definitions/Question'
+          success:
+            type: boolean
+            example: true
