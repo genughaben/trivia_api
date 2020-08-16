@@ -227,6 +227,7 @@ def create_app(test_config=None):
 
 
     @app.route('/categories/<int:category_id>/questions')
+    @swag_from('docs/get_questions_for_category_id.yaml')
     def get_questions_for_category_id(category_id):
         '''
         GET endpoint to get questions based on category.
