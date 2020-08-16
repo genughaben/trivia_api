@@ -1,0 +1,19 @@
+  Delivers categories as dictionary mapping id on type and success status
+    ---
+  tags:
+    - V1
+  definitions:
+    import: "flaskr/docs/definitions.yaml"
+  responses:
+    200:
+      description: A dictionary of (category_id, category_type) pairs
+      example:
+        success: true
+      schema:
+        type: object
+        properties:
+          categories:
+            $ref: '#/definitions/Categories'
+          success:
+            type: boolean
+            example: true

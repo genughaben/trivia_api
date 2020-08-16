@@ -2,6 +2,8 @@ import sys
 import traceback
 
 from flask import Flask
+from flasgger import Swagger
+from flasgger import swag_from
 from flask_cors import CORS
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.sql.expression import func
@@ -25,6 +27,12 @@ def create_app(test_config=None):
         app.config.from_pyfile('./app_local.cfg')
         logger.debug(f"environment: {app.config}")
 
+    app.config['SWAGGER'] = {
+        'title': 'Trivia API',
+        'uiversion': 3,
+    }
+    Swagger(app)
+
     setup_db(app)
 
     # Seting up CORS. Allow '*' for origins.
@@ -42,6 +50,7 @@ def create_app(test_config=None):
 
 
     @app.route('/categories')
+    @swag_from('docs/get_categories.yaml')
     def get_categories():
         '''
         Endpoint to handle GET requests for all available categories.
@@ -81,12 +90,16 @@ def create_app(test_config=None):
             return question
 
     @app.route('/questions')
+    @swag_from('docs/get_questions.yaml')
     def get_questions():
         '''
-        Endpoint to handle GET requests for questions,
+        GET questions
         including pagination (every 10 questions).
-        This endpoint should return a list of questions,
-        number of total questions, current category, categories.
+        Return a
+         * list of questions,
+         * number of total questions
+         * current category
+         * categories.
         '''
         try:
             return jsonify({
@@ -101,6 +114,7 @@ def create_app(test_config=None):
 
 
     @app.route('/questions/<int:question_id>', methods=['DELETE'])
+    @swag_from('docs/delete_question.yaml')
     def delete_questions(question_id):
         '''
         Endpoint to DELETE question using a question ID.
@@ -124,6 +138,7 @@ def create_app(test_config=None):
 
 
     @app.route('/questions', methods=['POST'])
+    @swag_from('docs/create_question.yaml')
     def create_questions():
         '''
         Endpoint to POST a new question,
@@ -172,6 +187,7 @@ def create_app(test_config=None):
 
 
     @app.route('/questions/search', methods=['POST'])
+    @swag_from('docs/search_questions.yaml')
     def search_questions():
         '''
         Endpoint to get questions based on a search term.
@@ -211,6 +227,7 @@ def create_app(test_config=None):
 
 
     @app.route('/categories/<int:category_id>/questions')
+    @swag_from('docs/get_questions_for_category_id.yaml')
     def get_questions_for_category_id(category_id):
         '''
         GET endpoint to get questions based on category.
@@ -242,6 +259,7 @@ def create_app(test_config=None):
 
 
     @app.route('/play', methods=['POST'])
+    @swag_from('docs/play_trivia.yaml')
     def play_trivia():
         '''
         POST Endpoint to get questions to play the quiz.
