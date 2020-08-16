@@ -114,7 +114,7 @@ def create_app(test_config=None):
 
 
     @app.route('/questions/<int:question_id>', methods=['DELETE'])
-    @swag_from('docs/delete_questions.yaml')
+    @swag_from('docs/delete_question.yaml')
     def delete_questions(question_id):
         '''
         Endpoint to DELETE question using a question ID.
@@ -138,7 +138,7 @@ def create_app(test_config=None):
 
 
     @app.route('/questions', methods=['POST'])
-    @swag_from('docs/create_questions.yaml')
+    @swag_from('docs/create_question.yaml')
     def create_questions():
         '''
         Endpoint to POST a new question,
