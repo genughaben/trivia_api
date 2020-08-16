@@ -1,4 +1,4 @@
-  Delivers categories as dictionary mapping id on type
+  Delivers categories as dictionary mapping id on type and success status
     ---
   tags:
     - V1
