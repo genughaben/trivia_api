@@ -100,3 +100,7 @@ To view the documentation run the app:
 > FLASK_APP=flaskr/__init__.py FLASK_ENV=development flask run
 
 and visit [http://localhost:5000/apidocs/](http://localhost:5000/apidocs/)
+
+You should see something like:
+
+![alt text](Triva_API_Swagger_Doc_Screenshot.png "Trivia API Swagger Documentation")
