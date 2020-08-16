@@ -259,6 +259,7 @@ def create_app(test_config=None):
 
 
     @app.route('/play', methods=['POST'])
+    @swag_from('docs/play_trivia.yaml')
     def play_trivia():
         '''
         POST Endpoint to get questions to play the quiz.
