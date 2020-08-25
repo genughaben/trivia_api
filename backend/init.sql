@@ -1,0 +1,2 @@
+CREATE DATABASE triviadb;
+CREATE DATABASE trivia_test;

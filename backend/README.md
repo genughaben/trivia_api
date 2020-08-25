@@ -9,37 +9,27 @@ We recommend working within a virtual environment whenever using Python for proj
 You can review all required dependenices in the requirements.txt.
 
 > git clone git@github.com:genughaben/trivia_api.git
-> python -m venv venv
+> python3 -m venv venv
 > pip install -r requirements.txt
 
 ## Setup database
 
-### Setup and run postgresql database management system in docker:
+### Make sure no other service uses port 5432
 
-> docker-compose up
+You can check that typing:
 
-### Add production database:
+> sudo lsof -i:5432
 
-> docker exec -it trivia_dbms psql -U postgres
-> CREATE DATABASE triviadb;
-> \q
-> export FLASK_APP=flaskr
-> export FLASK_ENV=development
-> flask db init
-> flask db migrate
-> flask db upgrade
-> docker exec -i trivia_dbms psql -U postgres -d triviadb < trivia_content.psql
+You can either stop possibly running process or kill it using:
 
-### Add testing database:
+> kill <process_id>
 
-> docker exec -it trivia_dbms psql -U postgres
-> CREATE DATABASE trivia_test;
-> \q
-> docker exec -i trivia_dbms psql -U postgres -d trivia_test < trivia.psql
-> docker exec -it trivia_dbms psql -U postgres
-> \c trivia_test
-> ALTER TABLE questions RENAME category TO category_id
 
+### Setup production and testing database:
+
+Type:
+
+> ./start-databases.sh
 
 ## Run API app:
 
