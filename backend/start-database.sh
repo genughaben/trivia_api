@@ -1,6 +1,21 @@
 #!/bin/bash
 set -u
 
+# checks if trivia_dbms has been created and is running, and stops it
+if docker ps | grep -q trivia_dbms
+then
+  echo "stopping already existing trivia_dbms"
+  docker stop trivia_dbms
+fi
+
+# checks if trivia_dbms has been created and is stopped, and removes it
+if docker ps -aq -f status=exited -f name=trivia_dbms
+then
+  echo "removing already existing trivia_dbms"
+  docker rm trivia_dbms
+fi
+
+# (re-)create trivia_dbms from docker-compose.yml
 docker-compose up -d --force-recreate
 sleep 10
 
